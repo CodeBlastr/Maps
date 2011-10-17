@@ -2,18 +2,18 @@
 <h2><?php __('Maps');?></h2>
 <p>
 <?php
-echo $paginator->counter(array(
+echo $this->Paginator->counter(array(
 'format' => __('Page %page% of %pages%, showing %current% records out of %count% total, starting on record %start%, ending on %end%', true)
 ));
 ?></p>
 <table cellpadding="0" cellspacing="0">
 <tr>
 	<th>Street</th>
-	<th><?php echo $paginator->sort('city');?></th>
-	<th><?php echo $paginator->sort('state');?></th>
-	<th><?php echo $paginator->sort('country');?></th>
-	<th><?php echo $paginator->sort('postal');?></th>
-	<th><?php echo $paginator->sort('marker_text');?></th>	
+	<th><?php echo $this->Paginator->sort('city');?></th>
+	<th><?php echo $this->Paginator->sort('state');?></th>
+	<th><?php echo $this->Paginator->sort('country');?></th>
+	<th><?php echo $this->Paginator->sort('postal');?></th>
+	<th><?php echo $this->Paginator->sort('marker_text');?></th>	
 </tr>
 <?php
 $i = 0;

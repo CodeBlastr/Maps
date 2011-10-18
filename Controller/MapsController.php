@@ -51,13 +51,7 @@ class MapsController extends MapsAppController {
 			}
 				
 		} 
-	}
-	
-	function admin_index() {
-		$this->Map->recursive = 0;
-		$this->set('locations', $this->paginate());
-	}
-	
+	}	
 		
 }
 ?>

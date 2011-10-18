@@ -1,5 +1,5 @@
 <div class="maps index">
-<h2><?php __('Maps');?></h2>
+<h2><?php echo __('Maps');?></h2>
 <p>
 <?php
 echo $this->Paginator->counter(array(
@@ -47,7 +47,7 @@ foreach ($locations as $location):
 </div>
 <?php echo $this->element('paging'); ?>
 <div class="actions">
-	<h3><?php __('Actions'); ?></h3>
+	<h3><?php echo __('Actions'); ?></h3>
 	<ul>
 
 		<li><?php echo $this->Html->link(__('Search Location', true), array('action' => 'search'));?></li>

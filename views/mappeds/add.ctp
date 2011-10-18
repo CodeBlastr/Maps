@@ -1,7 +1,7 @@
 <div class="maps form">
 <?php echo $this->Form->create('Map');?>
 	<fieldset>
- 		<legend><?php __('Add Location'); ?></legend>
+ 		<legend><?php echo __('Add Location'); ?></legend>
 	<?php
 		echo $this->Form->input('street');
 		echo $this->Form->input('city');

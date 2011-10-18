@@ -16,10 +16,10 @@ class MapsController extends MapsAppController {
 	}
 
 	function add() {
-		if (!empty($this->data)) {
-			$this->data['Map']['user_id'] = $this->Auth->user('id');
+		if (!empty($this->request->data)) {
+			$this->request->data['Map']['user_id'] = $this->Auth->user('id');
 			$this->Map->create();
-			if ($this->Map->save($this->data)) {
+			if ($this->Map->save($this->request->data)) {
 				$this->flash(__('Location saved.', true), array('action'=>'index'));
 				$this->redirect(array('action' => 'index'));
 			} else {
@@ -37,15 +37,15 @@ class MapsController extends MapsAppController {
 	}
 	
 	function search(){
-		if(!empty($this->data)){
+		if(!empty($this->request->data)){
 			$locations = $this->Map->find('all');
 			if(!empty($locations))  {  	
 				$this->set('locations', $locations);
-				$this->set('search_locations', $this->data);
+				$this->set('search_locations', $this->request->data);
 			}
 			else {
 				$locations_db = $this->Map->find('first'); 
-				$search_location = $this->data;							
+				$search_location = $this->request->data;							
 				$this->set('locations_db', $locations_db);
 				$this->set('search_locations', $search_location);
 			}

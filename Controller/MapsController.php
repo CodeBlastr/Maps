@@ -1,7 +1,8 @@
 <?php
 class MapsController extends MapsAppController {
 
-	var $name = 'Maps';
+	public $name = 'Maps';
+	public $uses = 'Maps.Map';
 	
 	function index() {
 		$this->Map->recursive = 0;

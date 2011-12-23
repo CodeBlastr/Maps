@@ -44,11 +44,15 @@ foreach ($locations as $location):
 </table>
 </div>
 <?php echo $this->element('paging'); ?>
-<div class="actions">
-	<h3><?php echo __('Actions'); ?></h3>
-	<ul>
-
-		<li><?php echo $this->Html->link(__('Search Location', true), array('action' => 'search'));?></li>
-		<li><?php echo $this->Html->link(__('Add Location', true), array('action' => 'add')); ?> </li>
-	</ul>
-</div>
+<?php 
+// set the contextual menu items
+$this->set('context_menu', array('menus' => array(
+	array(
+		'heading' => 'Location',
+		'items' => array(
+			$this->Html->link(__('Search Location', true), array('action' => 'search')),
+			$this->Html->link(__('Add Location', true), array('action' => 'add')),
+			)
+		),
+	)));
+?>

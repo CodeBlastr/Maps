@@ -9,6 +9,7 @@
 $mapWidth = !empty($mapWidth) ? $mapWidth : '100%';
 $mapHeight = !empty($mapHeight) ? $mapHeight : '500px';
 $mapZoom = !empty($mapZoom) ? $mapZoom : 8;
+$autoZoomMultiple = !empty($autoZoomMultiple) ? $autoZoomMultiple : false;
 
 if(isset($locations)) { ?>
 	
@@ -32,12 +33,45 @@ if(isset($locations)) { ?>
 					}
 				} ?>
 		    ];
+			
+			<?php if ($autoZoomMultiple) { ?>
+			//  Make an array of the LatLng's of the markers, only, so we can autozoom
+       		var LatLngList = [
+       			<?php 
+				$latLngArray = '';
+       			foreach ($locations as $location) {
+       				if (!empty($location['Map']['latitude'])) {
+						$latLngArray .= 'new google.maps.LatLng ('.$location['Map']['latitude'].','.$location['Map']['longitude'].'), ';
+					}
+				}
+				$latLngArray = rtrim($latLngArray, ', ');
+				echo $latLngArray;
+				?>
+		    ];
+			<?php } //($autoZoomMultiple) ?>
 		
 		    var map = new google.maps.Map(document.getElementById('map_canvas'), {
 		      zoom: <?php echo $mapZoom; ?>,
 		      center: new google.maps.LatLng(<?php echo $center; ?>),
 		      mapTypeId: google.maps.MapTypeId.ROADMAP
 		    });
+		
+		
+			<?php if ($autoZoomMultiple) { ?>
+			// Set an optimal zoom when there are multiple items
+			if ( LatLngList.length > 1) {
+				//  Create a new viewpoint bound
+				var bounds = new google.maps.LatLngBounds ();
+				//  Go through each...
+				for (var i = 0, LtLgLen = LatLngList.length; i < LtLgLen; i++) {
+				  //  And increase the bounds to take this point
+				  bounds.extend (LatLngList[i]);
+				}
+				//  Fit these bounds to the map
+				map.fitBounds (bounds);
+			}
+			<?php } // ($autoZoomMultiple) ?>
+
 		
 		    var infowindow = new google.maps.InfoWindow();
 		

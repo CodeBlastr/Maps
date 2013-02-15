@@ -54,7 +54,11 @@ class MapableBehavior extends ModelBehavior {
  * 
  */
  	public function beforeSave(Model $Model) {
- 		$this->address = $Model->data[$Model->name][$this->settings['addressField']];
+		if ( isset($Model->data[$Model->name][$this->settings['addressField']]) ) {
+			$this->address = $Model->data[$Model->name][$this->settings['addressField']];// original
+		} elseif ( isset($Model->data[$Model->name]['Meta'][ltrim ($this->settings['addressField'],'!')]) ) {
+			$this->address = $Model->data[$Model->name]['Meta'][ltrim ($this->settings['addressField'],'!')]; // support !location
+		}
 		return true;
  	}
 	

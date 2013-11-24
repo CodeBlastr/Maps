@@ -2,6 +2,7 @@
 	<?php echo $this->Form->create('Map');?>
 	<fieldset>
  		<legend><?php echo __('Add Location'); ?></legend>
+		<?php echo $this->Form->input('Map.id'); ?>
 		<?php echo $this->Form->input('Map.street'); ?>
 		<?php echo $this->Form->input('Map.city'); ?>
 		<?php echo $this->Form->input('Map.state'); ?>
@@ -20,7 +21,9 @@ $this->set('context_menu', array('menus' => array(
 	array(
 		'heading' => 'Maps',
 		'items' => array(
-			$this->Html->link(__('Search'), array('controller' => 'maps', 'action' => 'search'))
+			$this->Html->link(__('Search'), array('controller' => 'maps', 'action' => 'search')),
+			$this->Html->link(__('List'), array('controller' => 'maps', 'action' => 'list')),
+			$this->Html->link(__('Add'), array('controller' => 'maps', 'action' => 'add'))
 			)
 		)
 	)));

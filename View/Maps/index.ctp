@@ -1,49 +1,53 @@
 <div class="maps index">
-<h2><?php echo __('Maps');?></h2>
-<table cellpadding="0" cellspacing="0">
-<tr>
-	<th>Street</th>
-	<th><?php echo $this->Paginator->sort('city');?></th>
-	<th><?php echo $this->Paginator->sort('state');?></th>
-	<th><?php echo $this->Paginator->sort('country');?></th>
-	<th><?php echo $this->Paginator->sort('postal');?></th>
-	<th><?php echo $this->Paginator->sort('marker_text');?></th>	
-</tr>
-<?php
-$i = 0;
-foreach ($locations as $location):
-	$class = null;
-	if ($i++ % 2 == 0) {
-		$class = ' class="altrow"';
-	}
-?>
-	<tr<?php echo $class;?>>
-		<td>
-			<?php echo $this->Html->link($location['Map']['street'], array('action' => 'view', $location['Map']['id'])); ?>
-		</td>
-		<td>
-			<?php echo $location['Map']['city']; ?>
-		</td>
-		<td>
-			<?php echo $location['Map']['state']; ?>
-		</td>
-		<td>
-			<?php echo $location['Map']['country']; ?>
-		</td>
-		<td>
-			<?php echo $location['Map']['postal']; ?>
-		<td>
-			<?php echo $location['Map']['marker_text']; ?>
-		</td>
-	</tr>
-<?php endforeach; ?>
-</table>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>Street</th>
+				<th><?php echo $this->Paginator->sort('city');?></th>
+				<th><?php echo $this->Paginator->sort('state');?></th>
+				<th><?php echo $this->Paginator->sort('country');?></th>
+				<th><?php echo $this->Paginator->sort('postal');?></th>
+				<th><?php echo $this->Paginator->sort('marker_text');?></th>	
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach ($locations as $location): ?>
+			<tr>
+				<td>
+					<?php echo $this->Html->link($location['Map']['street'], array('action' => 'view', $location['Map']['id'])); ?>
+				</td>
+				<td>
+					<?php echo $location['Map']['city']; ?>
+				</td>
+				<td>
+					<?php echo $location['Map']['state']; ?>
+				</td>
+				<td>
+					<?php echo $location['Map']['country']; ?>
+				</td>
+				<td>
+					<?php echo $location['Map']['postal']; ?>
+				<td>
+					<span class="truncate" data-truncate="50">
+						<?php echo strip_tags($location['Map']['marker_text']); ?>
+					</span>
+				</td>
+			</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
 </div>
 <?php echo $this->Element('paging'); ?>
-<div class="actions">
-	<h3><?php echo __('Actions'); ?></h3>
-	<ul>
-		<li><?php echo $this->Html->link(__('Search Location', true), array('action' => 'search'));?></li>
-		<li><?php echo $this->Html->link(__('Add Location', true), array('action' => 'add')); ?> </li>
-	</ul>
-</div>
+
+
+<?php
+// set the contextual menu items
+$this->set('context_menu', array('menus' => array(
+	array(
+		'heading' => 'Maps',
+		'items' => array(
+			$this->Html->link(__('Search'), array('controller' => 'maps', 'action' => 'search')),
+			$this->Html->link(__('Add'), array('controller' => 'maps', 'action' => 'add'))
+			)
+		)
+	)));

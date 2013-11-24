@@ -1,38 +1,12 @@
-<?php
-// this should be at the top of every element created with format __ELEMENT_PLUGIN_ELEMENTNAME_instanceNumber.
-// it allows a database driven way of configuring elements, and having multiple instances of that configuration.
-	if(!empty($instance) && defined('__ELEMENT_MAPS_MAP_'.$instance)) {
-		extract(unserialize(constant('__ELEMENT_MAPS_MAP_'.$instance)));
-	} else if (defined('__ELEMENT_MAPS_MAP')) {
-		extract(unserialize(__ELEMENT_MAPS_MAP));
-	}
-// setup defaults
-
-$mapWidth = !empty($mapWidth) ? $mapWidth : 500;
-$mapHeight = !empty($mapHeight) ? $mapHeight : 500;
-?>
+<?php $mapWidth = !empty($mapWidth) ? $mapWidth : '100%'; ?>
+<?php $mapHeight = !empty($mapHeight) ? $mapHeight : '100%'; ?>
     
 <div class="maps form">
-<?php echo $this->Form->create('Map', array('url' => array('plugin' => 'maps', 'controller' => 'maps', 'action' => 'search')));?>
-	<fieldset>
- 		<legend><?php # __('Search Location'); ?></legend>
-	<?php
-		echo $this->Form->input('Map.search_loc', array('label' => __('Location', true)));
-		/*echo $this->Form->input('Map.street');
-		echo $this->Form->input('Map.city');
-		echo $this->Form->input('Map.state');
-		echo $this->Form->input('Map.country');
-		echo $this->Form->input('Map.postal');*/
-	?>
-	</fieldset>
-<?php echo $this->Form->end(__('Search', true));?>
+	<?php echo $this->Form->create('Map', array('url' => array('plugin' => 'maps', 'controller' => 'maps', 'action' => 'search'))); ?>
+	<?php echo $this->Form->input('Map.search_loc', array('label' => __('Location'))); ?>
+	<?php echo $this->Form->end(__('Search'));?>
 </div>
-
-<?php 
-	if(isset($locations)) {
-?>
-	
-
+<?php if(isset($locations)) { ?>
 	<script type="text/javascript"><!--
 
 		var geocoder;
@@ -284,7 +258,7 @@ $mapHeight = !empty($mapHeight) ? $mapHeight : 500;
 
 	--></script>
 
-	<div id="map_canvas" style="width: <?php echo $mapWidth; ?>px; height: <?php echo $mapHeight; ?>px"></div>
+	<div id="map_canvas" style="width: <?php echo $mapWidth; ?>; height: <?php echo $mapHeight; ?>"></div>
     
 <script type="text/javascript">
 function get_radius() {

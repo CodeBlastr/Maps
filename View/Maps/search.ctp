@@ -1,14 +1,21 @@
-<?php 
-if(isset($locations)) {
-	echo $this->Html->script('http://maps.google.com/maps/api/js?sensor=false', array('inline' => false));
-	echo $this->Html->css('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/base/jquery-ui.css', array('inline' => false));
-	echo $this->Html->css('http://static.jquery.com/ui/css/demo-docs-theme/ui.theme.css', array('inline' => false));
-	echo $this->Html->script('http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js', array('inline' => false));
-	
-	echo $this->Html->script('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js', array('inline' => false));
-	echo $this->Html->script('http://jquery-ui.googlecode.com/svn/tags/latest/external/jquery.bgiframe-2.1.1.js', array('inline' => false));
-	echo $this->Html->script('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/i18n/jquery-ui-i18n.min.js', array('inline' => false));
-}
+<div class="maps form">
+	<?php echo $this->Form->create('Map', array('class' => 'form-inline', 'type' => 'get', 'url' => array('plugin' => 'maps', 'controller' => 'maps', 'action' => 'search'))); ?>
+	<?php echo $this->Form->input('Map.q', array('label' => false, 'value' => $this->request->query['q'], 'placeholder' => 'Location Search')); ?>
+	<?php echo $this->Form->end(__('Search'));?>
+</div>
 
-echo $this->Element('map');
-?>
+<hr />
+
+<?php echo $this->Element('mapped'); ?>
+
+<?php
+// set the contextual menu items
+$this->set('context_menu', array('menus' => array(
+	array(
+		'heading' => 'Maps',
+		'items' => array(
+			$this->Html->link(__('List'), array('controller' => 'maps', 'action' => 'index')),
+			$this->Html->link(__('Add'), array('controller' => 'maps', 'action' => 'add'))
+			)
+		)
+	)));

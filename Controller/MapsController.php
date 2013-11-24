@@ -2,57 +2,86 @@
 class MapsController extends MapsAppController {
 
 	public $name = 'Maps';
+
 	public $uses = 'Maps.Map';
 	
-	function index() {
+	public function index() {
 		$this->Map->recursive = 0;
 		$this->set('locations', $this->paginate());
+		$this->set('page_title_for_layout', 'Locations');
+		$this->set('title_for_layout', 'Locations');
 	}
 
-	function view($id = null) {
-		if (!$id) {
-			$this->Session->setFlash(__('Invalid Location', true));
-			$this->redirect(array('action' => 'index'));
+	public function view($id = null) {
+		$this->Map->id = $id;
+		if (!$this->Map->exists()) {
+			throw new NotFoundException(__('Map not found'));
 		}
+		$this->set('map', $this->request->data = $this->Map->read());
+		$this->set('page_title_for_layout', $this->request->data['Map']['street']);
+		$this->set('title_for_layout', $this->request->data['Map']['street']);
+		return $this->request->data;
 	}
 
-	function add() {
+	public function add() {
 		if (!empty($this->request->data)) {
 			$this->request->data['Map']['user_id'] = $this->Auth->user('id');
 			$this->Map->create();
 			if ($this->Map->save($this->request->data)) {
 				$this->flash(__('Location saved.', true), array('action'=>'index'));
-				$this->redirect(array('action' => 'index'));
-			} else {
+				$this->redirect(array('action' => 'search'));
 			}
 		}
+		$this->set('page_title_for_layout', 'Add Location');
+		$this->set('title_for_layout', 'Add Location');
 	}
 
-	function delete($id = null) {
-		if (!$id) {
-			$this->flash(__('Invalid Location', true), array('action'=>'index'));
+	public function edit($id = null) {
+		$this->Map->id = $id;
+		if (!$this->Map->exists()) {
+			throw new NotFoundException(__('Map not found'));
 		}
-		if ($this->Invoice->delete($id)) {
-			$this->flash(__('Location deleted', true), array('action'=>'index'));
+		if (!empty($this->request->data)) {
+			$this->request->data['Map']['user_id'] = $this->Auth->user('id');
+			$this->Map->create();
+			if ($this->Map->save($this->request->data)) {
+				$this->flash(__('Location saved.', true), array('action'=>'index'));
+				$this->redirect(array('action' => 'search'));
+			}
+		}
+		$this->set('map', $this->request->data = $this->Map->read());
+		$this->set('page_title_for_layout', 'Edit ' . $this->request->data['Map']['street']);
+		$this->set('title_for_layout', 'Edit ' . $this->request->data['Map']['street']);
+		return $this->request->data;
+	}
+
+	public function delete($id = null) {
+		$this->Map->id = $id;
+		if (!$this->Map->exists()) {
+			throw new NotFoundException(__('Map not found'));
+		}
+		if ($this->Map->delete($id)) {
+			$this->Session->setFlash(__('Location deleted')); 
+			$this->redirect(array('action'=>'index'));
 		}
 	}
 	
-	function search(){
-		if(!empty($this->request->data)){
-			$locations = $this->Map->find('all');
+	public function search() {
+		if(!empty($this->request->query['q'])){
+			$query = $this->request->query['q'];
+			$locations = $this->Map->find('all', array('conditions' => array('Map.search_tags LIKE' => "%$query%")));
 			if(!empty($locations))  {  	
 				$this->set('locations', $locations);
 				$this->set('search_locations', $this->request->data);
-			}
-			else {
+			} else {
 				$locations_db = $this->Map->find('first'); 
 				$search_location = $this->request->data;							
 				$this->set('locations_db', $locations_db);
 				$this->set('search_locations', $search_location);
 			}
-				
 		} 
+		$this->set('page_title_for_layout', 'Location Search');
+		$this->set('title_for_layout', 'Location Search');
 	}	
 		
 }
-?>

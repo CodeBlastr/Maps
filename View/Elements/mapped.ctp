@@ -10,10 +10,12 @@ $mapWidth = !empty($mapWidth) ? $mapWidth : '100%';
 $mapHeight = !empty($mapHeight) ? $mapHeight : '500px';
 $mapZoom = !empty($mapZoom) ? $mapZoom : 8;
 $autoZoomMultiple = !empty($autoZoomMultiple) ? $autoZoomMultiple : false;
+$locations = !empty($locations) ? $locations : array(array('Map' => array('latitude' => '36', 'longitude' => '-50', 'marker_text' => 'No results found')));
+?>
 
-if(isset($locations)) { ?>
-	
-	<?php echo $this->Html->script('https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false', array('inline' => false)); ?>
+<div id="map_canvas"> No results found. </div>
+
+<?php echo $this->Html->script('https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false', array('inline' => false)); ?>
 	<style type="text/css">
 		#map_canvas {
   			height: <?php echo $mapHeight; ?>;
@@ -27,7 +29,7 @@ if(isset($locations)) { ?>
        			$i = 0;
        			foreach ($locations as $location) {
        				if (!empty($location['Map']['latitude'])) {
-       					echo '[\''.$location['Map']['name'].'\', '.$location['Map']['latitude'].', '.$location['Map']['longitude'].', '.$i.'],'; // canopy index and product view
+       					echo '[\''.addslashes($location['Map']['marker_text']).'\', '.$location['Map']['latitude'].', '.$location['Map']['longitude'].', '.$i.'],'; // canopy index and product view
 						$center = $location['Map']['latitude'].', '.$location['Map']['longitude'];
 						$i++;
 					}
@@ -77,12 +79,12 @@ if(isset($locations)) { ?>
 		
 		    var marker, i;
 		
-		    for (i = 0; i < locations.length; i++) {  
+		    for (i = 0; i < locations.length; i++) {
 		      marker = new google.maps.Marker({
 		        position: new google.maps.LatLng(locations[i][1], locations[i][2]),
 		        map: map
 		      });
-		
+				console.log(locations[i])
 		      google.maps.event.addListener(marker, 'click', (function(marker, i) {
 		        return function() {
 		          infowindow.setContent(locations[i][0]);
@@ -96,7 +98,4 @@ if(isset($locations)) { ?>
 		$(document).ready(function() {
 			initialize();
 		});
-	</script>
-	<div id="map_canvas"></div>
-<?php 
-} ?>
+</script>

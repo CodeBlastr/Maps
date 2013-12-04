@@ -22,6 +22,14 @@ class MapsController extends MapsAppController {
 		$this->set('title_for_layout', $this->request->data['Map']['street']);
 		return $this->request->data;
 	}
+	
+	public function nearby(){
+		$this->Map->recursive = 0;
+		$this->set('locations', $this->paginate());
+		$this->set('page_title_for_layout', 'Nearby');
+		$this->set('title_for_layout', 'Nearby');
+		
+	}
 
 	public function add() {
 		if (!empty($this->request->data)) {

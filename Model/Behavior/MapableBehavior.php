@@ -5,9 +5,14 @@ class MapableBehavior extends ModelBehavior {
 
 	public $settings = array(
 		'url' => 'http://maps.google.com/maps/api/geocode/json?sensor=false&address=',
-		'nameField' => 'name',
+		'streetField' => 'street',
+		'cityField' => 'city',
+		'stateField' => 'state',
+		'countryField' => 'country',
+		'postalField' => 'zip',
+		'addressField' => 'address',
 		'markerTextField' => 'description',
-		'addressField' => 'address'
+		'searchTagsField' => 'description'
 		);
 
 /**
@@ -54,10 +59,17 @@ class MapableBehavior extends ModelBehavior {
  * 
  */
  	public function beforeSave(Model $Model) {
-		if ( isset($Model->data[$Model->name][$this->settings['addressField']]) ) {
-			$this->address = $Model->data[$Model->name][$this->settings['addressField']];// original
-		} elseif ( isset($Model->data[$Model->name]['Meta'][ltrim ($this->settings['addressField'],'!')]) ) {
-			$this->address = $Model->data[$Model->name]['Meta'][ltrim ($this->settings['addressField'],'!')]; // support !location
+ 		if (is_array($this->settings['addressField']) && !empty($this->settings['addressField'])) {
+ 			// merge multiple address fields into a single field for mapping
+ 			$Model->data[$Model->name]['_compiled'] = '';
+ 			foreach ($this->settings['addressField'] as $field) {
+ 				$Model->data[$Model->name]['_compiled'] .= $Model->data[$Model->name][$field] . ' ';
+ 			}
+			$this->settings['addressField'] = '_compiled';
+ 		}
+		
+		if (isset($Model->data[$Model->name][$this->settings['addressField']])) {
+			$this->address = $Model->data[$Model->name][$this->settings['addressField']];
 		}
 		return true;
  	}
@@ -74,12 +86,17 @@ class MapableBehavior extends ModelBehavior {
 			$id = !empty($id) ? $id : null;
 			$data = array('Map' => array(
 				'id' => $id,
-				'name' => $Model->data[$Model->alias][$this->settings['nameField']],
-				'model' => $Model->name,
 				'foreign_key' => $Model->id,
+				'model' => $Model->name,
+				'street' => $Model->data[$Model->alias][$this->settings['streetField']],
+				'city' => $Model->data[$Model->alias][$this->settings['cityField']],
+				'state' => $Model->data[$Model->alias][$this->settings['stateField']],
+				'country' => $Model->data[$Model->alias][$this->settings['countryField']],
+				'postal' => $Model->data[$Model->alias][$this->settings['postalField']],
+				'marker_text' => $Model->data[$Model->alias][$this->settings['markerTextField']],
 				'latitude' => $coords['lat'],
-				'longitude' => $coords['lng'], 
-				'marker_text' => $Model->data[$Model->alias][$this->settings['markerTextField']]
+				'longitude' => $coords['lng'],
+				'search_tags' => $Model->data[$Model->alias][$this->settings['searchTagsField']]
 				));
 		}
 		return !empty($data) ? $this->Map->save($data) : null;

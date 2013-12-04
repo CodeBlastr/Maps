@@ -39,7 +39,7 @@ class MapTestCase extends CakeTestCase {
     
 	public function testSave() {
 		$data = array(
-             'Map' => array(
+             'Location' => array(
                 'name' => 'Frankie Johnnie & Luigo Too',
                 'latitude' => '37.386339', 
                 'longitude' => '-122.085823', 
@@ -52,82 +52,283 @@ class MapTestCase extends CakeTestCase {
 	}
 
 /**
- *  Fast calculation to find latitude and longitude within a radius
- * 
+ *  find latitude and longitude within a set radius
  */
-	// public function testFastDistance(){
+	// public function testDistance(){
+		// $distance = 0.5;
+		// $lat =  37.386339;
+		// $long = -122.085823;
 // 		
-	// }
+		 // $query = SELECT * FROM maps
+			// WHERE ACOS( SIN( RADIANS( $lat ) ) * SIN( RADIANS(  `latitude` ) ) + COS( RADIANS( $lat ) ) * 
+			// COS( RADIANS(  `latitude` ) ) * COS( RADIANS(  `longitude` ) - ( RADIANS( $long ) ) ) ) *3959 <= $distance;
+// 													
+		   // $data = array(
+             // 'Location' => array(
+                 // 'name' => 'Frankie Johnnie & Luigo Too',
+                 // 'latitude' => '37.386339', 
+                 // 'longitude' => '-122.085823', 
+                 // 'city' => 'Mountain View', 
+                 // 'state' => 'California'
+                 // )
+             // );
+// 
+// 		
+//  		
+	 // }
 
 /**
- * Slower calculation to find latitude and longitude within a radius
+ * Find a location within our givin radius and which is whithin our min/max latitude and longitude points
  */
-	//public function testSlowDistance($radius, $long, $lat){
-			// $query = SELECT id, street, marker_text, city, state, ( 3959 * ACOS( COS( RADIANS( 37 ) ) * COS( RADIANS( latitude ) ) * COS( RADIANS( longitude ) - RADIANS( -122 ) ) + SIN( RADIANS( 37 ) ) * SIN( RADIANS( latitude ) ) ) ) AS distance
-					// FROM maps
-					// HAVING distance <50
-					// ORDER BY distance
-					// LIMIT 0 , 20
-									
-		  // $data = array(
-            // 'Map' => array(
-                // 'name' => 'Frankie Johnnie & Luigo Too',
-                // 'latitude' => '37.386339', 
-                // 'longitude' => '-122.085823', 
-                // 'city' => 'Mountain View', 
-                // 'state' => 'California'
-                // ),
-            // 'Alias' => array(
-                // 'name' => 'lorem-ipsum'
-                // )
-            // );
-
+ 
+ 	public function testFindLocation(){
+ 		$data = array( 
+			array(
+			 	'Map' => array(
+	                'marker_text' => 'Pizzeria Serio',
+	                'latitude' => '41.939996', 
+	                'longitude' => '-87.67149', 
+	                'city' => 'Chicago', 
+	                'state' => 'IL'
+                )),
+             array(
+	             'Map' => array(
+	                'marker_text' => 'Late Night Thai',
+	                'latitude' => '41.940204', 
+	                'longitude' => '-87.670686', 
+	                 'city' => 'Chicago', 
+	                'state' => 'IL'
+                )),
+              array(
+	             'Map' => array(
+	                'marker_text' => 'The Pony',
+	                'latitude' => '41.940052', 
+	                'longitude' => '-87.67016', 
+	                 'city' => 'Chicago', 
+	                'state' => 'IL'
+                )),
+             array(
+	             'Map' => array(
+	                'name' => 'Tony & Albas Pizza & Pasta',
+	                'latitude' => '37.394339', 
+	                'longitude' => '-122.080823', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                ))
+			
+		);
+		$radius = 1;
+		$currentLat = 41.939996;
+		$currentLong = -87.67149;
 		
-// 		
-	// }
-
+		$this->Map->saveAll($data);
+		$return = $this->Map->findLocation($currentLat, $currentLong, $radius);
+		//moved to the Map model
+		// $display = $this->Map->find('all', array('conditions' => array('Map.latitude BETWEEN ? AND ?' => array($result['minLat'], $result['maxLat']), 
+									// 'Map.longitude BETWEEN ? and ?' => array($result['maxLong'], $result['minLong']))));
+									
+		$this->assertTrue(!empty($return));
+		// $this->assertTrue($coords['minLat'] <= $currentLat);
+		// $this->assertTrue($coords['maxLat'] >= $currentLat);
+		// $this->assertTrue($coords['minLong'] <= $currentLong);
+		// $this->assertTrue($coords['maxLong'] >= $currentLong);
+		
+ 	}
+	 
 /**
  * Find the Max Latutude from a latitude point within a given radius
  */
-	//public function testMaxlatitude(){
-			// $radius = 6371; //km
-			// $distance = 1000; //km
-			// $r = 0.1570; //angle between points
-			// $lat = 32.53; //static latitude point
-// 			
-			// $latMax = $lat + $r; 
-			// echo $latMax;
+	public function testMaxlatitude(){
+		$data = array( 
+			array(
+			 	'Map' => array(
+	                'name' => 'Frankie Johnnie & Luigo Too',
+	                'latitude' => '37.386339', 
+	                'longitude' => '-122.085823', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                )),
+             array(
+	             'Map' => array(
+	                'name' => 'Amicis East Coast Pizzeria',
+	                'latitude' => '37.38714', 
+	                'longitude' => '-122.083235', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                )),
+              array(
+	             'Map' => array(
+	                'name' => 'Kapps Pizza Bar & Grill',
+	                'latitude' => '37.393885', 
+	                'longitude' => '-122.078916', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                )),
+             array(
+	             'Map' => array(
+	                'name' => 'Tony & Albas Pizza & Pasta',
+	                'latitude' => '40.394011', 
+	                'longitude' => '-122.095528', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                ))
 			
-		
-//	}
+		);
+		  $radius = 2; //miles
+		  $currentLat = 37.386339;
+		  
+		  $this->Map->saveAll($data);
+		  $result = $this->Map->maxLatitude($currentLat, $radius);
+		  $display = $this->Map->find('all', array('conditions' => array('Map.latitude <=' => $result)));
+
+		  $this->assertTrue($result > $currentLat);
+	}
 
 /**
  * Find the Min Latutude from a latitude point within a given radius
  */	
-	//public function testMinlatitude(){
-			// $radius = 6371; //km
-			// $distance = 1000; //km
-			// $r = 0.1570; //angle between points
-			// $lat = 32.53; //static latitude point
-// 			
-			// $latMin = $lat - $r; 
-			// echo $latMin;
+	public function testMinlatitude(){
+		$data = array( 
+			array(
+			 	'Map' => array(
+	                'name' => 'Frankie Johnnie & Luigo Too',
+	                'latitude' => '37.386339', 
+	                'longitude' => '-122.085823', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                )),
+             array(
+	             'Map' => array(
+	                'name' => 'Amicis East Coast Pizzeria',
+	                'latitude' => '37.38714', 
+	                'longitude' => '-122.083235', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                )),
+              array(
+	             'Map' => array(
+	                'name' => 'Kapps Pizza Bar & Grill',
+	                'latitude' => '37.393885', 
+	                'longitude' => '-122.078916', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                )),
+             array(
+	             'Map' => array(
+	                'name' => 'Tony & Albas Pizza & Pasta',
+	                'latitude' => '36.394011', 
+	                'longitude' => '-122.095528', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                ))
+			
+		);
+		  $radius = 2; //miles
+		  $currentLat = 37.386339;
+		  
+		  $this->Map->saveAll($data);
+		  $result = $this->Map->minLatitude($currentLat, $radius);
+		  $display = $this->Map->find('all', array('conditions' =>array('Map.latitude >=' => $result)));
+		  
+		  $this->assertTrue($result < $currentLat);
 		
-		
-	//}
+	}
 
 /**
  * Find the Max Longitude from a laongitude point within a given radius
  */
-//	public function testMaxLongitude(){
+	public function testMaxLongitude(){
+		$data = array( 
+			array(
+			 	'Map' => array(
+	                'name' => 'Frankie Johnnie & Luigo Too',
+	                'latitude' => '37.386339', 
+	                'longitude' => '-122.085823', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                )),
+             array(
+	             'Map' => array(
+	                'name' => 'Amicis East Coast Pizzeria',
+	                'latitude' => '37.38714', 
+	                'longitude' => '-122.083235', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                )),
+              array(
+	             'Map' => array(
+	                'name' => 'Kapps Pizza Bar & Grill',
+	                'latitude' => '37.393885', 
+	                'longitude' => '-122.078916', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                )),
+             array(
+	             'Map' => array(
+	                'name' => 'Tony & Albas Pizza & Pasta',
+	                'latitude' => '38.394011', 
+	                'longitude' => '-122.095528', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                ))
+			
+		);
+	    $radius = 2; //miles
+	    $currentLong = -122.095528;
 		
-	//}
+		$this->Map->saveAll($data);
+	    $result = $this->Map->maxLongitude($currentLong, $radius);
+		$display = $this->Map->find('all', array('conditions' => array('Map.longitude <=' => $result)));
+	 	$this->assertTrue($result > $currentLat);
+	}
 
 /**
  * Find the Min longitude from a longitude point within a given radius
  */	
-	//public function testMinLongitude(){
+	public function testMinLongitude(){
+		$data = array( 
+			array(
+			 	'Map' => array(
+	                'name' => 'Frankie Johnnie & Luigo Too',
+	                'latitude' => '37.386339', 
+	                'longitude' => '-122.085823', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                )),
+             array(
+	             'Map' => array(
+	                'name' => 'Amicis East Coast Pizzeria',
+	                'latitude' => '37.38714', 
+	                'longitude' => '-122.083235', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                )),
+              array(
+	             'Map' => array(
+	                'name' => 'Kapps Pizza Bar & Grill',
+	                'latitude' => '37.361359', 
+	                'longitude' => '-122.078916', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                )),
+             array(
+	             'Map' => array(
+	                'name' => 'Tony & Albas Pizza & Pasta',
+	                'latitude' => '35.394011', 
+	                'longitude' => '-122.095528', 
+	                'city' => 'Mountain View', 
+	                'state' => 'California'
+                ))
+			
+		);
+		  $radius = 2; //miles
+		  $currentLong = -122.095528;
+		  
+		  $this->Map->saveAll($data);
+		  $result = $this->Map->minLongitude($currentLong, $radius);
+		  $display = $this->Map->find('all', array('conditions' => array('Map.longitude >=' => $result)));
+		  $this->assertTrue($result < $currentLong);
 		
-	//}
+	}
 	
 }

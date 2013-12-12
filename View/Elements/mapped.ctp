@@ -3,8 +3,6 @@
  * Mapped View
  * 
  * A map that displays markers when given the locations variable
- * 
- * @todo This should save geocoding to the database so that we don't have to pull it a million times
  */
 $mapWidth = !empty($mapWidth) ? $mapWidth : '100%';
 $mapHeight = !empty($mapHeight) ? $mapHeight : '500px';

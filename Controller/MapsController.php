@@ -23,12 +23,16 @@ class MapsController extends MapsAppController {
 		return $this->request->data;
 	}
 	
-	public function nearby(){
+	public function nearby($currentLat = null, $currentLong = null, $radius = 1){
 		$this->Map->recursive = 0;
-		$this->set('locations', $this->paginate());
-		$this->set('page_title_for_layout', 'Nearby');
-		$this->set('title_for_layout', 'Nearby');
-		
+	    $locations = $this->Map->findLocation($currentLat, $currentLong, $radius);
+		if ($this->request->is('ajax')){
+			$this->response->body(json_encode($locations));
+			return $this->response;
+		} else{
+			$this->set('locations', $locations);
+		}
+
 	}
 
 	public function add() {

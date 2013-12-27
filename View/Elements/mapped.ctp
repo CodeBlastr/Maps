@@ -1,4 +1,4 @@
-<?php
+  <?php
 /**
  * Mapped View
  * 
@@ -9,11 +9,12 @@ $mapHeight = !empty($mapHeight) ? $mapHeight : '500px';
 $mapZoom = !empty($mapZoom) ? $mapZoom : 8;
 $autoZoomMultiple = !empty($autoZoomMultiple) ? $autoZoomMultiple : false;
 $locations = !empty($locations) ? $locations : array();
+$api_key = unserialize(__GOOGLE_MAP_API_KEY); 
 ?>
-<?php debug($locations); ?>
+<?php debug($api_key); ?>
 <div id="map_canvas"> No results found. </div>
 
-<?php echo $this->Html->script('https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false', array('inline' => false)); ?>
+<?php echo $this->Html->script('https://maps.googleapis.com/maps/api/js?key='.$api_key['google_api_key'].'&sensor=FALSE', array('inline' => false)); ?>
 	<style type="text/css">
 		#map_canvas {
   			height: <?php echo $mapHeight; ?>;
@@ -23,6 +24,7 @@ $locations = !empty($locations) ? $locations : array();
 	<script type="text/javascript">
 		var locations = [];
 		var center = false;
+		
       	function initialize() {
        		locations = [
        			<?php

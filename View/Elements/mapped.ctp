@@ -8,9 +8,9 @@ $mapWidth = !empty($mapWidth) ? $mapWidth : '100%';
 $mapHeight = !empty($mapHeight) ? $mapHeight : '500px';
 $mapZoom = !empty($mapZoom) ? $mapZoom : 8;
 $autoZoomMultiple = !empty($autoZoomMultiple) ? $autoZoomMultiple : false;
-$locations = !empty($locations) ? $locations : array(array('Map' => array('latitude' => '36', 'longitude' => '-50', 'marker_text' => 'No results found')));
+$locations = !empty($locations) ? $locations : array();
 ?>
-
+<?php debug($locations); ?>
 <div id="map_canvas"> No results found. </div>
 
 <?php echo $this->Html->script('https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false', array('inline' => false)); ?>
@@ -20,19 +20,30 @@ $locations = !empty($locations) ? $locations : array(array('Map' => array('latit
   			width: <?php echo $mapWidth; ?>;
 		}
 	</style>
-	<script type="text/javascript">		
+	<script type="text/javascript">
+		var locations = [];
+		var center = false;
       	function initialize() {
-       		var locations = [
-       			<?php 
+       		locations = [
+       			<?php
+       			if(!empty($locations)) {
        			$i = 0;
        			foreach ($locations as $location) {
        				if (!empty($location['Map']['latitude'])) {
        					echo '[\''.addslashes($location['Map']['marker_text']).'\', '.$location['Map']['latitude'].', '.$location['Map']['longitude'].', '.$i.'],'; // canopy index and product view
 						$center = $location['Map']['latitude'].', '.$location['Map']['longitude'];
+						echo 'center = "'.$center.'";';
 						$i++;
 					}
-				} ?>
+				}} ?>
 		    ];
+			
+		    <?php if(empty($locations)): ?>
+
+		   	var result = getLocation();
+		   	console.log(result);
+		    
+		    <?php endif; ?>
 			
 			<?php if ($autoZoomMultiple) { ?>
 			//  Make an array of the LatLng's of the markers, only, so we can autozoom
@@ -49,10 +60,10 @@ $locations = !empty($locations) ? $locations : array(array('Map' => array('latit
 				?>
 		    ];
 			<?php } //($autoZoomMultiple) ?>
-		
+			console.log(center);
 		    var map = new google.maps.Map(document.getElementById('map_canvas'), {
 		      zoom: <?php echo $mapZoom; ?>,
-		      center: new google.maps.LatLng(<?php echo $center; ?>),
+		      center: new google.maps.LatLng(center),
 		      mapTypeId: google.maps.MapTypeId.ROADMAP
 		    });
 		
@@ -96,4 +107,20 @@ $locations = !empty($locations) ? $locations : array(array('Map' => array('latit
 		$(document).ready(function() {
 			initialize();
 		});
+
+		function getLocation() {
+		  if (navigator.geolocation) {
+		    	navigator.geolocation.getCurrentPosition(getCoords);
+		    	return true;
+		  }else{
+			  return false;
+			}
+		}
+
+		function getCoords(position) {
+			console.log(position);
+			center = position.coords.latitude+","+position.coords.longitude;
+			console.log(center);
+		}
+		
 </script>

@@ -6,7 +6,7 @@
 
 <hr />
 
-<?php echo $this->Element('mapped'); ?>
+<?php echo $this->Element('mapped', array('locations' => $locations)); ?>
 
 <?php
 // set the contextual menu items

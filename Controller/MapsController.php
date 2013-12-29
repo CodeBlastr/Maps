@@ -81,7 +81,19 @@ class MapsController extends MapsAppController {
 	public function search() {
 		if(!empty($this->request->query['q'])){
 			$query = $this->request->query['q'];
-			$locations = $this->Map->find('all', array('conditions' => array('Map.search_tags LIKE' => "%$query%")));
+			
+			$locations = $this->Map->find('all', array(
+					'conditions' => array(
+						'OR' => array(
+							'Map.search_tags LIKE' => "%$query%",
+							'Map.postal LIKE' => "%$query%",
+							'Map.street LIKE' => "%$query%",
+							'Map.city LIKE' => "%$query%",
+							'Map.country LIKE' => "%$query%",			
+						)
+					),
+					'contain' => array('_auto'),
+			));
 			if(!empty($locations))  {  	
 				$this->set('locations', $locations);
 				$this->set('search_locations', $this->request->data);
@@ -91,7 +103,8 @@ class MapsController extends MapsAppController {
 				$this->set('locations_db', $locations_db);
 				$this->set('search_locations', $search_location);
 			}
-		} 
+		}
+		debug($locations);exit;
 		$this->set('page_title_for_layout', 'Location Search');
 		$this->set('title_for_layout', 'Location Search');
 	}	

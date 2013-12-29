@@ -104,7 +104,7 @@ class MapsController extends MapsAppController {
 				$this->set('search_locations', $search_location);
 			}
 		}
-		debug($locations);exit;
+		
 		$this->set('page_title_for_layout', 'Location Search');
 		$this->set('title_for_layout', 'Location Search');
 	}	

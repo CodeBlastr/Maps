@@ -1,5 +1,6 @@
 <?php
-class MapsController extends MapsAppController {
+
+class AppMapsController extends MapsAppController {
 
 	public $name = 'Maps';
 
@@ -109,4 +110,10 @@ class MapsController extends MapsAppController {
 		$this->set('title_for_layout', 'Location Search');
 	}	
 		
+}
+
+if (!isset($refuseInit)) {
+	class MapsController extends AppMapsController {
+	}
+
 }

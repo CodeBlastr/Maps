@@ -100,7 +100,7 @@ $api_key = defined('__GOOGLE_MAP_API_KEY') ? unserialize(__GOOGLE_MAP_API_KEY) :
 			<?php if(empty($locations)): ?>
 			center = position.coords;
 			$.get('/maps/maps/nearby/'+center.latitude+'/'+center.longitude).done(function( data ) {
-			    locations = data;
+			    locations = JSON.parse(data);
 			    initialize();
 			  });
 			<?php else: ?>

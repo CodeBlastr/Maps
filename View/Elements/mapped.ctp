@@ -5,7 +5,7 @@
  * A map that displays markers when given the locations variable
  */
 $mapWidth = !empty($mapWidth) ? $mapWidth : '100%';
-$mapHeight = !empty($mapHeight) ? $mapHeight : '500px';
+$mapHeight = !empty($mapHeight) ? $mapHeight : '100%;';
 $mapZoom = !empty($mapZoom) ? $mapZoom : 8;
 $autoZoomMultiple = !empty($autoZoomMultiple) ? $autoZoomMultiple : true;
 $locations = !empty($locations) ? $locations : array();
@@ -19,7 +19,7 @@ $api_key = defined('__GOOGLE_MAP_API_KEY') ? unserialize(__GOOGLE_MAP_API_KEY) :
 
 <div id="map_canvas"> No results found. </div>
 
-<?php echo $this->Html->script('https://maps.googleapis.com/maps/api/js?key='.$api_key['google_api_key'].'&sensor=false', array('inline' => false)); ?>
+<?php echo $this->Html->script('https://maps.googleapis.com/maps/api/js?key='.$api_key['google_api_key'].'&sensor=false', array('inline' => true)); ?>
 	<style type="text/css">
 		#map_canvas {
   			height: <?php echo $mapHeight; ?>;

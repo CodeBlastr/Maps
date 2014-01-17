@@ -52,7 +52,7 @@ class Map extends MapsAppModel {
 				'minLong' => $this->minLongitude($currentLong, $radius),
 				'maxLong' => $this->maxLongitude($currentLong, $radius));
 		
-		$query = "SELECT *, ( 3959 * acos( cos( radians({$currentLat}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$currentLong}) ) + sin( radians({$currentLat}) ) * sin( radians( latitude ) ) ) ) AS distance FROM maps HAVING distance < {$radius} ORDER BY distance";
+		$query = "SELECT *, ( 3959 * acos( cos( radians({$currentLat}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$currentLong}) ) + sin( radians({$currentLat}) ) * sin( radians( latitude ) ) ) ) AS distance FROM maps AS Map HAVING distance < {$radius} ORDER BY distance";
 		 
 		 $results = $this->query($query);
 		 //$results = $this->find('all', array('conditions' => array('Map.latitude BETWEEN ? AND ?' => array($coords['minLat'], $coords['maxLat']), 

@@ -2,6 +2,7 @@
 App::uses('Map', 'Maps.Model');
 	
 class MapableBehavior extends ModelBehavior {
+	
 
 	public $settings = array(
 		'url' => 'http://maps.google.com/maps/api/geocode/json?sensor=false&address=',
@@ -63,9 +64,10 @@ class MapableBehavior extends ModelBehavior {
  			// merge multiple address fields into a single field for mapping
  			$Model->data[$Model->name]['_compiled'] = '';
  			foreach ($this->settings['addressField'] as $field) {
- 				$Model->data[$Model->name]['_compiled'] .= $Model->data[$Model->name][$field] . ' ';
+ 				$Model->data[$Model->name]['_compiled'] .= $Model->data[$Model->name][$field] . ',';
  			}
-			$this->settings['addressField'] = '_compiled';
+ 			$Model->data[$Model->name]['_compiled'] = rtrim ( $Model->data[$Model->name]['_compiled'], ',' );
+ 			$this->settings['addressField'] = '_compiled';
  		}
 		
 		if (isset($Model->data[$Model->name][$this->settings['addressField']])) {
@@ -81,6 +83,7 @@ class MapableBehavior extends ModelBehavior {
  * @param bool $created
  */
 	public function afterSave(Model $Model, $created) {
+		$this->Map->create();
 		if ($coords = $this->geocode($Model)) {
 			$id = $this->Map->field('id', array('Map.foreign_key' => $Model->id, 'Map.model' => $Model->name));
 			$id = !empty($id) ? $id : null;
@@ -110,7 +113,6 @@ class MapableBehavior extends ModelBehavior {
  */
 	public function geocode(Model $Model) {
         $url = $this->settings['url'].urlencode($this->address);
-       
         $resp_json = self::curl_file_get_contents($url);
         $resp = json_decode($resp_json, true);
         if ($resp['status']='OK'){

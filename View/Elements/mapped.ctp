@@ -10,7 +10,7 @@ $mapZoom = !empty($mapZoom) ? $mapZoom : 8;
 $autoZoomMultiple = !empty($autoZoomMultiple) ? $autoZoomMultiple : true;
 $locations = !empty($locations) ? $locations : array();
 //$locations = isset($this->request->data['Map']) ? $this->request->data['Map'] : array();
-$api_key = defined('__GOOGLE_MAP_API_KEY') ? unserialize(__GOOGLE_MAP_API_KEY) : false; 
+$api_key = defined('__APP_GOOGLE_MAP_API_KEY') ? __APP_GOOGLE_MAP_API_KEY : false;
 ?>
 
 <?php if(!api_key): ?>

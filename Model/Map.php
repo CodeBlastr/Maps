@@ -7,13 +7,15 @@ class Map extends MapsAppModel {
 	
 	
 	public function find($type = 'first', $params = array()) {
-		if (!empty($params['contain']) && is_array($params['contain'])) {
-			if(array_search('_auto', $params['contain']) !== false) {
+		if (!empty($params['contain'])) {
+			if($params['contain'] === '_auto' || array_search('_auto', $params['contain']) !== false) {
+				if(is_string($params['contain'])) {
+					$params['contain'] = array($params['contain']);
+				}
 				//Passes params to autobind.
 				$params = $this->_autoBind($params);
 			}
 		}
-		
 		return parent::find($type, $params);
 	}
 	
@@ -49,9 +51,13 @@ class Map extends MapsAppModel {
 				'maxLat' => $this->maxLatitude($currentLat, $radius),
 				'minLong' => $this->minLongitude($currentLong, $radius),
 				'maxLong' => $this->maxLongitude($currentLong, $radius));
-			
-		 $results = $this->find('all', array('conditions' => array('Map.latitude BETWEEN ? AND ?' => array($coords['minLat'], $coords['maxLat']), 
-					'Map.longitude BETWEEN ? and ?' => array($coords['maxLong'], $coords['minLong']))));
+		
+		$query = "SELECT *, ( 3959 * acos( cos( radians({$currentLat}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$currentLong}) ) + sin( radians({$currentLat}) ) * sin( radians( latitude ) ) ) ) AS distance FROM maps HAVING distance < {$radius} ORDER BY distance";
+		 
+		 $results = $this->query($query);
+		 //$results = $this->find('all', array('conditions' => array('Map.latitude BETWEEN ? AND ?' => array($coords['minLat'], $coords['maxLat']), 
+		 //			'Map.longitude BETWEEN ? and ?' => array($coords['maxLong'], $coords['minLong']))));
+		 
 		 return $results;
 			
 	}

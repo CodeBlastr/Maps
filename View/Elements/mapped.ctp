@@ -10,7 +10,7 @@ $mapZoom = !empty($mapZoom) ? $mapZoom : 8;
 $autoZoomMultiple = !empty($autoZoomMultiple) ? $autoZoomMultiple : true;
 $locations = !empty($locations) ? $locations : array();
 //$locations = isset($this->request->data['Map']) ? $this->request->data['Map'] : array();
-$api_key = defined('__APP_GOOGLE_MAP_API_KEY') ? __APP_GOOGLE_MAP_API_KEY : false;
+//$api_key = defined('__APP_GOOGLE_MAP_API_KEY') ? __APP_GOOGLE_MAP_API_KEY : false;
 ?>
 
 <?php if(!api_key): ?>
@@ -88,28 +88,27 @@ $api_key = defined('__APP_GOOGLE_MAP_API_KEY') ? __APP_GOOGLE_MAP_API_KEY : fals
 		});
 
 		function getLocation() {
-		  if (navigator.geolocation) {
-		    	navigator.geolocation.getCurrentPosition(getCoords);
-		  }else{
-			  alert('Your browser does not support location services');
-			  initialize();
-			}
+			<?php if (empty($locations)) : ?>
+				if (navigator.geolocation) {
+				    navigator.geolocation.getCurrentPosition(getCoords);
+			  	} else {
+				 	alert('Your browser does not support location services');
+				  	initialize();
+				}
+			<?php else : ?>
+				locations = <?php echo json_encode($locations); ?>;
+				//This assumes that the best match is first in the locations array
+				center = {latitude: locations[0].Map.latitude, longitude: locations[0].Map.longitude};
+				initialize();
+			<?php endif; ?>
 		}
 
 		function getCoords(position) {
-			<?php if(empty($locations)): ?>
 			center = position.coords;
-			$.get('/maps/maps/nearby/'+center.latitude+'/'+center.longitude).done(function( data ) {
+			$.get('/maps/maps/nearby/' + center.latitude + '/' + center.longitude).done(function( data ) {
 			    locations = JSON.parse(data);
 			    initialize();
-			  });
-			<?php else: ?>
-			locations = <?php echo json_encode($locations); ?>;
-			//This assumes that the best match is first in the locations array
-			center = {latitude: locations[0].Map.latitude, longitude: locations[0].Map.longitude};
-			initialize();
-			<?php endif; ?>
-			
+			});
 		}
 		
 </script>

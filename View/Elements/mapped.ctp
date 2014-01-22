@@ -8,7 +8,14 @@ $mapWidth = !empty($mapWidth) ? $mapWidth : '100%';
 $mapHeight = !empty($mapHeight) ? $mapHeight : '100%;';
 $mapZoom = !empty($mapZoom) ? $mapZoom : 8;
 $autoZoomMultiple = !empty($autoZoomMultiple) ? $autoZoomMultiple : true;
-$locations = !empty($locations) ? $locations : array();
+$mapped = !empty($locations) ? $locations : array();
+// get rid of empty map values
+unset($locations);
+foreach ($mapped as $map) {
+	if (!empty($map['Map'])) {
+		$locations[]['Map'] = $map['Map']; 
+	}
+}
 //$locations = isset($this->request->data['Map']) ? $this->request->data['Map'] : array();
 //$api_key = defined('__APP_GOOGLE_MAP_API_KEY') ? __APP_GOOGLE_MAP_API_KEY : false;
 ?>

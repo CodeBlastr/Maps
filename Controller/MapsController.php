@@ -24,7 +24,7 @@ class AppMapsController extends MapsAppController {
 		return $this->request->data;
 	}
 	
-	public function nearby($currentLat = null, $currentLong = null, $radius = 1){
+	public function nearby($currentLat = null, $currentLong = null, $radius = 1) {
 		$this->Map->recursive = 0;
 	    $locations = $this->Map->findLocation($currentLat, $currentLong, $radius);
 		if ($this->request->is('ajax')){
@@ -33,7 +33,6 @@ class AppMapsController extends MapsAppController {
 		} else{
 			$this->set('locations', $locations);
 		}
-
 	}
 
 	public function add() {

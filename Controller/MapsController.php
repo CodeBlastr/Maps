@@ -80,20 +80,15 @@ class AppMapsController extends MapsAppController {
 	
 	public function search() {
 		if(!empty($this->request->query['q'])){
-			$query = $this->request->query['q'];
-			
-			$locations = $this->Map->find('all', array(
-					'conditions' => array(
-						'OR' => array(
-							'Map.search_tags LIKE' => "%$query%",
-							'Map.postal LIKE' => "%$query%",
-							'Map.street LIKE' => "%$query%",
-							'Map.city LIKE' => "%$query%",
-							'Map.country LIKE' => "%$query%",			
-						)
-					),
-					'contain' => array('_auto'),
-			));
+			$query =  array_values(array_filter(preg_split("/( |,)/", $this->request->query['q'])));
+			for ($i=0; $i < count($query); $i++) {
+				$or['OR'][$i]['OR']['Map.search_tags LIKE'] = '%' . $query[$i] . '%';
+				$or['OR'][$i]['OR']['Map.postal LIKE'] = '%' . $query[$i] . '%';
+				$or['OR'][$i]['OR']['Map.street LIKE'] = '%' . $query[$i] . '%';
+				$or['OR'][$i]['OR']['Map.city LIKE'] = '%' . $query[$i] . '%';
+				$or['OR'][$i]['OR']['Map.country LIKE'] = '%' . $query[$i] . '%';
+			}
+			$locations = $this->Map->find('all', array('conditions' => $or, 'contain' => array('_auto')));
 			if(!empty($locations))  {  	
 				$this->set('locations', $locations);
 				$this->set('search_locations', $this->request->data);

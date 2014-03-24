@@ -1,7 +1,8 @@
 <div class="maps form">
 	<?php echo $this->Form->create('Map', array('class' => 'form-inline', 'type' => 'get', 'url' => array('plugin' => 'maps', 'controller' => 'maps', 'action' => 'search'))); ?>
-	<?php echo $this->Form->input('Map.q', array('label' => false, 'value' => $this->request->query['q'], 'placeholder' => 'Location Search')); ?>
+	<?php echo $this->Form->input('Map.q', array('label' => 'City State or Zip', 'value' => $this->request->query['q'], 'placeholder' => 'Location Search')); ?>
 	<?php echo $this->Form->end(__('Search'));?>
+	<?php echo __('<small>%s Location(s) Found</small>', count($locations)); ?>
 </div>
 
 <hr />

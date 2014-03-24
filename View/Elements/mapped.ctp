@@ -1,11 +1,11 @@
-  <?php
+<?php
 /**
  * Mapped View
  * 
  * A map that displays markers when given the locations variable
  */
 $mapWidth = !empty($mapWidth) ? $mapWidth : '100%';
-$mapHeight = !empty($mapHeight) ? $mapHeight : '100%;';
+$mapHeight = !empty($mapHeight) ? $mapHeight : '400px'; // this cannot be a percentage by default
 $mapZoom = !empty($mapZoom) ? $mapZoom : 8;
 $autoZoomMultiple = !empty($autoZoomMultiple) ? $autoZoomMultiple : true;
 $mapped = !empty($locations) ? $locations : array();

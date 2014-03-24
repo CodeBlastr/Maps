@@ -58,6 +58,18 @@ class MapableBehavior extends ModelBehavior {
 /**
  * Before Save Callback
  * 
+ * $this->actsAs['Maps.Mapable'] = array(
+		'modelAlias' => 'Campaign',
+		'markerTextField' => 'description',
+		'streetField' => 'address_1',
+		'cityField' => 'city',
+		'stateField' => 'state',
+		'countryField' => null,
+		'postalField' => 'zip',
+		'addressField' => array('address_1', 'address_2', 'city', 'state', 'zip'),
+		'markerTextField' => 'description',
+		'searchTagsField' => 'description'
+	);
  */
  	public function beforeSave(Model $Model) {
  		if (is_array($this->settings['addressField']) && !empty($this->settings['addressField'])) {

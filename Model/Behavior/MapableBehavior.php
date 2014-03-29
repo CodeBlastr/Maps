@@ -26,13 +26,10 @@ class MapableBehavior extends ModelBehavior {
 		$this->settings = array_merge($this->settings, $settings);
 		$this->Map = new Map;
 	}
-	
-	
+
 /**
  * Before find callback
- * 
- * Remove and save metaConditions for use in the afterFind
- * 
+ *  
  * @param Model $Model
  * @param array $query
  * @return array
@@ -53,8 +50,33 @@ class MapableBehavior extends ModelBehavior {
         $query['contain'][] = 'Map'; //$Model->contain('Meta');
        	return $query;
 	}
-	
-	
+
+/**
+ * After find callback
+ * 
+ * Unserialize the response from Google Maps
+ * 
+ * @param Model $Model
+ * @param array $results
+ * @param boolean $primary
+ * @return array
+ */
+	public function afterFind(Model $Model, array $results, $primary = false) {
+		// handles many
+		for ($i=0; $i < count($results); $i++) {
+			if (!empty($results[$i]['Map']['response'])) {
+				$results[$i]['Map']['response'] = unserialize($results[$i]['Map']['response']);
+				$results[$i]['Map']['_address_components'] = Set::combine($results[$i]['Map']['response']['results'][0], 'address_components.{n}.types.0', 'address_components');
+			}
+		}
+		// handles one
+		if (!empty($results['Map']['response'])) {
+			$results['Map']['response'] = unserialize($results['Map']['response']);
+			$results['Map']['_address_components'] = Set::combine($results['Map']['response']['results'][0], 'address_components.{n}.types.0', 'address_components');
+		}
+		return $results;
+	}
+
 /**
  * Before Save Callback
  * 
@@ -96,7 +118,7 @@ class MapableBehavior extends ModelBehavior {
  */
 	public function afterSave(Model $Model, $created) {
 		$this->Map->create();
-		if ($coords = $this->geocode($Model)) {
+		if ($response = $this->geocode($Model)) {
 			$id = $this->Map->field('id', array('Map.foreign_key' => $Model->id, 'Map.model' => $Model->name));
 			$id = !empty($id) ? $id : null;
 			$data = array('Map' => array(
@@ -109,8 +131,9 @@ class MapableBehavior extends ModelBehavior {
 				'country' => $Model->data[$Model->alias][$this->settings['countryField']],
 				'postal' => $Model->data[$Model->alias][$this->settings['postalField']],
 				'marker_text' => $Model->data[$Model->alias][$this->settings['markerTextField']],
-				'latitude' => $coords['lat'],
-				'longitude' => $coords['lng'],
+				'latitude' => $response['results'][0]['geometry']['location']['lat'],
+				'longitude' => $response['results'][0]['geometry']['location']['lng'],
+				'response' => serialize($response),
 				'search_tags' => $Model->data[$Model->alias][$this->settings['searchTagsField']]
 				));
 		}
@@ -128,7 +151,7 @@ class MapableBehavior extends ModelBehavior {
         $resp_json = self::curl_file_get_contents($url);
         $resp = json_decode($resp_json, true);
         if ($resp['status']='OK'){
-            return $resp['results'][0]['geometry']['location'];
+            return $resp;
         } else {
             return false;
         }

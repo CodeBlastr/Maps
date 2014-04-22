@@ -35,7 +35,7 @@ class MapableBehavior extends ModelBehavior {
  * @return array
  * @todo optimize by flattening and searching for Alias.
  */
-	public function beforeFind(Model $Model, array $query) {
+	public function beforeFind(\Model $Model, $query) {
         $Model->bindModel(array(
         	'hasOne' => array(
 				'Map' => array(
@@ -61,7 +61,7 @@ class MapableBehavior extends ModelBehavior {
  * @param boolean $primary
  * @return array
  */
-	public function afterFind(Model $Model, array $results, $primary = false) {
+	public function afterFind(\Model $Model, $results, $primary = false) {
 		// handles many
 		for ($i=0; $i < count($results); $i++) {
 			if (!empty($results[$i]['Map']['response'])) {
@@ -93,7 +93,7 @@ class MapableBehavior extends ModelBehavior {
 		'searchTagsField' => 'description'
 	);
  */
- 	public function beforeSave(Model $Model) {
+ 	public function beforeSave(\Model $Model, $options = array()) {
  		if (is_array($this->settings['addressField']) && !empty($this->settings['addressField'])) {
  			// merge multiple address fields into a single field for mapping
  			$Model->data[$Model->name]['_compiled'] = '';
@@ -116,7 +116,7 @@ class MapableBehavior extends ModelBehavior {
  * @param Model $Model
  * @param bool $created
  */
-	public function afterSave(Model $Model, $created) {
+	public function afterSave(\Model $Model, $created, $options = array()) {
 		$this->Map->create();
 		if ($response = $this->geocode($Model)) {
 			$id = $this->Map->field('id', array('Map.foreign_key' => $Model->id, 'Map.model' => $Model->name));

@@ -79,14 +79,19 @@ class AppMapsController extends MapsAppController {
 	}
 	
 	public function search() {
-		if(!empty($this->request->query['q'])){
+		if(!empty($this->request->query['q'])) {
 			$query =  array_values(array_filter(preg_split("/( |,)/", $this->request->query['q'])));
+			$states = states();
 			for ($i=0; $i < count($query); $i++) {
 				$or['OR'][$i]['OR']['Map.search_tags LIKE'] = '%' . $query[$i] . '%';
 				$or['OR'][$i]['OR']['Map.postal LIKE'] = '%' . $query[$i] . '%';
+				$or['OR'][$i]['OR']['Map.state LIKE'] = '%' . $query[$i] . '%';
 				$or['OR'][$i]['OR']['Map.street LIKE'] = '%' . $query[$i] . '%';
 				$or['OR'][$i]['OR']['Map.city LIKE'] = '%' . $query[$i] . '%';
 				$or['OR'][$i]['OR']['Map.country LIKE'] = '%' . $query[$i] . '%';
+			}
+			if ($abbr = array_search($this->request->query['q'], $states)) {
+				$or['OR'][$i]['OR']['Map.state LIKE'] = '%' . $abbr . '%' ;
 			}
 			$locations = $this->Map->find('all', array('conditions' => $or, 'contain' => array('_auto')));
 			if(!empty($locations))  {  	

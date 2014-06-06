@@ -11,9 +11,12 @@ $autoZoomMultiple = !empty($autoZoomMultiple) ? $autoZoomMultiple : true;
 $mapped = !empty($locations) ? $locations : array();
 // get rid of empty map values
 unset($locations);
+$i = 0;
 foreach ($mapped as $map) {
 	if (!empty($map['Map'])) {
-		$locations[]['Map'] = $map['Map']; 
+		$locations[$i]['Map'] = $map['Map'];
+		$locations[$i]['Map']['marker_icon'] = !empty($map['Map']['marker_icon']) ? $map['Map']['marker_icon'] : '/img/helpers/google-maps-marker-default.png';
+		$i++;
 	}
 }
 //$locations = isset($this->request->data['Map']) ? $this->request->data['Map'] : array();
@@ -39,14 +42,12 @@ foreach ($mapped as $map) {
 		var LatLngList = [];
 		
       	function initialize() {
-
-			console.log(locations);
+      		
 			<?php if ($autoZoomMultiple) { ?>
 			//  Make an array of the LatLng's of the markers, only, so we can autozoom
        		for(i = 0 ; i < locations.length ; i++) {
 				LatLngList.push(new google.maps.LatLng(locations[i].Map.latitude, locations[i].Map.longitude));
            	}
-           	console.log(LatLngList);
 			<?php } //($autoZoomMultiple) ?>
 		    var map = new google.maps.Map(document.getElementById('map_canvas'), {
 		      zoom: <?php echo $mapZoom; ?>,
@@ -71,21 +72,26 @@ foreach ($mapped as $map) {
 
 		
 		    var infowindow = new google.maps.InfoWindow();
+		    
 		
 		    var marker, i;
 		
 		    for (i = 0; i < locations.length; i++) {
-		      marker = new google.maps.Marker({
-		        position: new google.maps.LatLng(locations[i].Map.latitude, locations[i].Map.longitude),
-		        map: map
-		      });
+			    var image = {
+			    	url: locations[i].Map.marker_icon
+			    };
+		      	marker = new google.maps.Marker({
+		        	position: new google.maps.LatLng(locations[i].Map.latitude, locations[i].Map.longitude),
+		        	map: map,
+		        	icon: image
+		     	});
 		      
-		      google.maps.event.addListener(marker, 'click', (function(marker, i) {
-		        return function() {
-		          infowindow.setContent(locations[i].Map.marker_text);
-		          infowindow.open(map, marker);
-		        }
-		      })(marker, i));
+		        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+		        	return function() {
+		          		infowindow.setContent(locations[i].Map.marker_text);
+		          		infowindow.open(map, marker);
+		        	}
+		      	})(marker, i));
 		    }
 		}
 	

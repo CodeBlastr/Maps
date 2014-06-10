@@ -110,6 +110,58 @@ class MapableBehavior extends ModelBehavior {
 		return true;
 	}
 
+    /**
+     * @param array $response geo response
+     * @param $default if default is not empty then use default
+     * @param string $type must be one of those(case insensitive)
+     * @param string $name can be only short_name or long_name
+     * Street,
+     * City,
+     * State,
+     * ZipCode or Postal
+     * Country,
+     * Formatted_Address, which is No. Street Name, City, State ZipCode, Country
+     * @return \if|string $string
+     */
+    private function parseGEOResponse(array $response,$default,$type = 'Street',$name = 'long_name'){
+        if(!empty($default)){
+            return $default;
+        }
+        $name = strtolower($name);
+        if(!in_array($name,array('long_name','short_name'))){
+            $name = 'long_name';
+        }
+        $result = '';
+        $compoment = $response['results'][0]['address_components'];
+        $stateIndex = count($compoment) == 8 ? 5 : 4;
+        $countryIndex = $stateIndex+1;
+        switch(strtolower($type)){
+            case 'street':
+                $result = sprintf('%s %s',$compoment[0]['short_name'],$compoment[1][$name]);
+                break;
+            case 'city':
+                $result =$compoment[2][$name];
+                break;
+            case 'state':
+                $result =$compoment[$stateIndex][$name];
+                break;
+
+            case 'postal':
+            case 'zipcode':
+                $result = $compoment[count($compoment)-1];
+                break;
+
+            case 'country':
+                $result = $compoment[$countryIndex][$name];
+                break;
+            case 'formatted_address':
+                $result = $response['results'][0]['formatted_address'];
+                break;
+
+        }
+
+        return $result;
+    }
 /**
  * After Save Callback
  *
@@ -125,11 +177,11 @@ class MapableBehavior extends ModelBehavior {
 					'id' => $id,
 					'foreign_key' => $Model->id,
 					'model' => $Model->name,
-					'street' => $Model->data[$Model->alias][$this->settings['streetField']],
-					'city' => $Model->data[$Model->alias][$this->settings['cityField']],
-					'state' => $Model->data[$Model->alias][$this->settings['stateField']],
-					'country' => $Model->data[$Model->alias][$this->settings['countryField']],
-					'postal' => $Model->data[$Model->alias][$this->settings['postalField']],
+					'street' => $this->parseGEOResponse($response,$Model->data[$Model->alias][$this->settings['streetField']],'street'),
+					'city' => $this->parseGEOResponse($response,$Model->data[$Model->alias][$this->settings['cityField']],'city'),
+					'state' => $this->parseGEOResponse($response,$Model->data[$Model->alias][$this->settings['stateField']],'state'),
+					'country' => $this->parseGEOResponse($response,$Model->data[$Model->alias][$this->settings['countryField']],'country'),
+					'postal' => $this->parseGEOResponse($response,$Model->data[$Model->alias][$this->settings['postalField']],'zipcode'),
 					'marker_text' => $Model->data[$Model->alias][$this->settings['markerTextField']],
 					'latitude' => $response['results'][0]['geometry']['location']['lat'],
 					'longitude' => $response['results'][0]['geometry']['location']['lng'],

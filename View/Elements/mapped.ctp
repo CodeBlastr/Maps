@@ -130,6 +130,8 @@ foreach ($mapped as $map) {
                     center = {latitude: locations[0].Map.latitude, longitude: locations[0].Map.longitude};
                 }
                 initialize();
+            }else{
+                $('#map_canvas').html('No result found');
             }
 
         }

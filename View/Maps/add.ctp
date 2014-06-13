@@ -7,6 +7,7 @@
 		<?php echo $this->Form->input('Map.state'); ?>
 		<?php echo $this->Form->input('Map.country'); ?>
 		<?php echo $this->Form->input('Map.postal'); ?>
+		<?php echo $this->Form->input('Map.marker_icon'); ?>
 		<?php echo $this->Form->input('Map.marker_text'); ?>
 		<?php echo $this->Form->input('Map.search_tags'); ?>
 	</fieldset>

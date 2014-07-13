@@ -83,6 +83,7 @@ class AppMapsController extends MapsAppController {
 			$query =  array_values(array_filter(preg_split("/( |,)/", $this->request->query['q'])));
 			$states = states();
 			for ($i=0; $i < count($query); $i++) {
+				$or['OR'][$i]['OR']['Map.marker_text LIKE'] = '%' . $query[$i] . '%';
 				$or['OR'][$i]['OR']['Map.search_tags LIKE'] = '%' . $query[$i] . '%';
 				$or['OR'][$i]['OR']['Map.postal LIKE'] = '%' . $query[$i] . '%';
 				$or['OR'][$i]['OR']['Map.state LIKE'] = '%' . $query[$i] . '%';
@@ -94,15 +95,17 @@ class AppMapsController extends MapsAppController {
 				$or['OR'][$i]['OR']['Map.state LIKE'] = '%' . $abbr . '%' ;
 			}
 			$locations = $this->Map->find('all', array('conditions' => $or, 'contain' => array('_auto')));
-			if(!empty($locations))  {  	
-				$this->set('locations', $locations);
-				$this->set('search_locations', $this->request->data);
-			} else {
-				$locations_db = $this->Map->find('first'); 
-				$search_location = $this->request->data;							
-				$this->set('locations_db', $locations_db);
-				$this->set('search_locations', $search_location);
-			}
+		}
+		if(!empty($locations))  {  	
+			$this->set('locations', $locations);
+			$this->set('search_locations', $this->request->data);
+		} else {
+			//left in case it needs to come back 6/29/2014 rk
+			//$locations_db = $this->Map->find('all', array('limit' => 100)); 
+			//$search_location = $this->request->data						
+			//$this->set('locations_db', $locations_db);
+			$this->set('locations', $locations = $this->Map->find('all', array('limit' => 250)));
+			$this->set('search_locations', $this->request->data);
 		}
 		
 		$this->set('page_title_for_layout', 'Location Search');

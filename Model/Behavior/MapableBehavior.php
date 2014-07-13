@@ -5,7 +5,7 @@ App::uses('Map', 'Maps.Model');
 class MapableBehavior extends ModelBehavior {
 
 	public $settings = array(
-		'url' => 'http://maps.google.com/maps/api/geocode/json?sensor=false&address=',
+		//'url' => 'http://maps.google.com/maps/api/geocode/json?sensor=false&address=',
 		'streetField' => 'street',
 		'cityField' => 'city',
 		'stateField' => 'state',
@@ -52,32 +52,6 @@ class MapableBehavior extends ModelBehavior {
 	}
 
 /**
- * After find callback
- *
- * Unserialize the response from Google Maps
- *
- * @param Model $Model
- * @param array $results
- * @param boolean $primary
- * @return array
- */
-	public function afterFind(\Model $Model, $results, $primary = false) {
-		// handles many
-		for ($i = 0; $i < count($results); $i++) {
-			if (!empty($results[$i]['Map']['response'])) {
-				$results[$i]['Map']['response'] = unserialize($results[$i]['Map']['response']);
-				$results[$i]['Map']['_address_components'] = Set::combine($results[$i]['Map']['response']['results'][0], 'address_components.{n}.types.0', 'address_components');
-			}
-		}
-		// handles one
-		if (!empty($results['Map']['response'])) {
-			$results['Map']['response'] = unserialize($results['Map']['response']);
-			$results['Map']['_address_components'] = Set::combine($results['Map']['response']['results'][0], 'address_components.{n}.types.0', 'address_components');
-		}
-		return $results;
-	}
-
-/**
  * Before Save Callback
  *
  * $this->actsAs['Maps.Mapable'] = array(
@@ -117,62 +91,27 @@ class MapableBehavior extends ModelBehavior {
  * @param bool $created
  */
 	public function afterSave(\Model $Model, $created, $options = array()) {
+		$id = $this->Map->field('id', array('Map.foreign_key' => $Model->id, 'Map.model' => $Model->name));
+		$id = !empty($id) ? $id : null;
+		$data = array(
+			'Map' => array(
+				'id' => $id,
+				'foreign_key' => $Model->id,
+				'model' => $Model->name,
+				'street' => $Model->data[$Model->alias][$this->settings['streetField']],
+				'city' => $Model->data[$Model->alias][$this->settings['cityField']],
+				'state' => $Model->data[$Model->alias][$this->settings['stateField']],
+				'country' => $Model->data[$Model->alias][$this->settings['countryField']],
+				'postal' => $Model->data[$Model->alias][$this->settings['postalField']],
+				'marker_text' => $Model->data[$Model->alias][$this->settings['markerTextField']],
+				//'latitude' => $response['results'][0]['geometry']['location']['lat'],
+				//'longitude' => $response['results'][0]['geometry']['location']['lng'],
+				//'response' => serialize($response),
+				'search_tags' => $Model->data[$Model->alias][$this->settings['searchTagsField']]
+				)
+			);
 		$this->Map->create();
-		if ($response = $this->geocode($Model)) {
-			$id = $this->Map->field('id', array('Map.foreign_key' => $Model->id, 'Map.model' => $Model->name));
-			$id = !empty($id) ? $id : null;
-			$data = array('Map' => array(
-					'id' => $id,
-					'foreign_key' => $Model->id,
-					'model' => $Model->name,
-					'street' => $Model->data[$Model->alias][$this->settings['streetField']],
-					'city' => $Model->data[$Model->alias][$this->settings['cityField']],
-					'state' => $Model->data[$Model->alias][$this->settings['stateField']],
-					'country' => $Model->data[$Model->alias][$this->settings['countryField']],
-					'postal' => $Model->data[$Model->alias][$this->settings['postalField']],
-					'marker_text' => $Model->data[$Model->alias][$this->settings['markerTextField']],
-					'latitude' => $response['results'][0]['geometry']['location']['lat'],
-					'longitude' => $response['results'][0]['geometry']['location']['lng'],
-					'response' => serialize($response),
-					'search_tags' => $Model->data[$Model->alias][$this->settings['searchTagsField']]
-			));
-		}
-		return !empty($data) ? $this->Map->save($data) : null;
-	}
-
-/**
- * Geocode
- *
- * Get the latitude and longitude of an address
- */
-	public function geocode(Model $Model) {
-		$url = $this->settings['url'] . urlencode($this->address);
-		$resp_json = self::curl_file_get_contents($url);
-		$resp = json_decode($resp_json, true);
-		if ($resp['status'] = 'OK') {
-			return $resp;
-		} else {
-			return false;
-		}
-	}
-
-/**
- * Curl file get contents
- *
- * Curl to get the results of a url
- */
-	static private function curl_file_get_contents($url) {
-		$c = curl_init();
-		curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($c, CURLOPT_URL, $url);
-		$contents = curl_exec($c);
-		curl_close($c);
-
-		if ($contents) {
-			return $contents;
-		} else {
-			return false;
-		}
+		return $this->Map->save($data);
 	}
 
 }

@@ -29,7 +29,8 @@ foreach ($mapped as $map) {
 
 <div id="map_canvas"> No results found. </div>
 
-<?php echo $this->Html->script('https://maps.googleapis.com/maps/api/js?key='.$api_key['google_api_key'].'&sensor=false', array('inline' => true)); ?>
+<?php echo $this->Html->script('//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'); ?>
+<?php echo $this->Html->script('//maps.googleapis.com/maps/api/js?key='.$api_key['google_api_key'].'&sensor=false', array('inline' => true)); ?>
 	<style type="text/css">
 		#map_canvas {
   			height: <?php echo $mapHeight; ?>;

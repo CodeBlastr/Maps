@@ -98,10 +98,10 @@ class MapableBehavior extends ModelBehavior {
 				'id' => $id,
 				'foreign_key' => $Model->id,
 				'model' => $Model->name,
-				'street' => $Model->data[$Model->alias][$this->settings['streetField']],
-				'city' => $Model->data[$Model->alias][$this->settings['cityField']],
-				'state' => $Model->data[$Model->alias][$this->settings['stateField']],
-				'country' => $Model->data[$Model->alias][$this->settings['countryField']],
+				'street' => $this->parseAddress('street',$Model->data[$Model->alias][$this->settings['streetField']]),
+				'city' => $this->parseAddress('city',$Model->data[$Model->alias][$this->settings['cityField']]),
+				'state' => $this->parseAddress('state',$Model->data[$Model->alias][$this->settings['stateField']]),
+				'country' => $this->parseAddress('country',$Model->data[$Model->alias][$this->settings['countryField']]),
 				'postal' => $Model->data[$Model->alias][$this->settings['postalField']],
 				'marker_text' => $Model->data[$Model->alias][$this->settings['markerTextField']],
 				//'latitude' => $response['results'][0]['geometry']['location']['lat'],
@@ -113,5 +113,19 @@ class MapableBehavior extends ModelBehavior {
 		$this->Map->create();
 		return $this->Map->save($data);
 	}
+
+    private function parseAddress($key,$value){
+        $parts = explode(',',$this->address);
+        if(!empty($parts) && empty($value)){
+            switch($key){
+                case 'street': $value = $parts[0];break;
+                case 'city' : $value =  $parts[1]; break;
+                case 'state' : $value =  $parts[2]; break;
+                case 'country' : $value =  'United States'; break;
+            }
+        }
+
+        return trim($value);
+    }
 
 }

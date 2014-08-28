@@ -1,7 +1,7 @@
 <?php
 App::uses('MapsAppModel', 'Maps.Model');
 
-class Map extends MapsAppModel {
+class AppMap extends MapsAppModel {
 
 	public $name = 'Map';
 	
@@ -183,4 +183,8 @@ class Map extends MapsAppModel {
 	}
 	
 
+}
+
+if (!isset($refuseInit)) {
+    class Map extends AppMap {}
 }

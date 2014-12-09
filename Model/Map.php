@@ -30,8 +30,6 @@ class AppMap extends MapsAppModel {
 				$this->data[$this->alias]['response'] = json_encode($response);
 			}
 		}
-		// debug($this->data);
-		// exit;
 		return true;
 	}
 
